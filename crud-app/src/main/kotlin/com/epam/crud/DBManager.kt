@@ -11,7 +11,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDate
 
 class DBManager {
     fun connect() = Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver", user = "", password = "")
@@ -26,7 +25,6 @@ class DBManager {
                 name = "Pushkin"
                 secondName = "Alexander"
                 lastName = "Sergeevic"
-                dob = LocalDate.of(1799, 1, 1)
             }
 
             Book.new {
