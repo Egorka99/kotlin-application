@@ -11,5 +11,4 @@ class Author(id: EntityID<Long>) : LongEntity(id) {
     var name by Authors.name
     var secondName by Authors.secondName
     var lastName by Authors.lastName
-    var dob by Authors.dob
 }
