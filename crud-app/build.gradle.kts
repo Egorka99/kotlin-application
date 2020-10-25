@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     jcenter()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -26,6 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
+    implementation("com.github.papsign:Ktor-OpenAPI-Generator:-SNAPSHOT")
 
 
 }

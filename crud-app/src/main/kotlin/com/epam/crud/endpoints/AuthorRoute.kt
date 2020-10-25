@@ -2,13 +2,18 @@ package com.epam.crud.endpoints
 
 import com.epam.crud.services.AuthorService
 import io.ktor.application.*
+import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.routing.post
 
 fun Route.authorRout(authorService: AuthorService) {
 
     route("/author") {
+        static("/static") {
+            resources("files")
+        }
         post {
             var parameters = call.receiveParameters()
 
