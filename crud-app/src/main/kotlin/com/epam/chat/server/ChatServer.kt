@@ -1,24 +1,23 @@
 package com.epam.chat.server
 
 import io.ktor.http.cio.websocket.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import java.util.*
-import java.util.concurrent.*
-import java.util.concurrent.atomic.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicInteger
 
 
 class ChatServer {
 
     val usersCounter = AtomicInteger()
 
-    val memberNames = ConcurrentHashMap<String, String>()
-
     val members = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
 
     val lastMessages = LinkedList<String>()
 
     suspend fun memberJoin(member: String, socket: WebSocketSession) {
-        val name = memberNames.computeIfAbsent(member) { "user${usersCounter.incrementAndGet()}" }
+        val name = "user${usersCounter.incrementAndGet()}"
 
         val list = members.computeIfAbsent(member) { CopyOnWriteArrayList<WebSocketSession>() }
         list.add(socket)
@@ -39,13 +38,13 @@ class ChatServer {
         connections?.remove(socket)
 
         if (connections != null && connections.isEmpty()) {
-            val name = memberNames.remove(member) ?: member
+            val name = member
             broadcast("server", "Member left: $name.")
         }
     }
 
     suspend fun message(sender: String, message: String) {
-        val name = memberNames[sender] ?: sender
+        val name = sender
         val formatted = "[$name] $message"
 
         broadcast(formatted)
@@ -65,7 +64,7 @@ class ChatServer {
     }
 
     private suspend fun broadcast(sender: String, message: String) {
-        val name = memberNames[sender] ?: sender
+        val name = sender
         broadcast("[$name] $message")
     }
 

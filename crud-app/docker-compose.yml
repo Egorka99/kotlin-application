@@ -5,7 +5,7 @@ services:
     build: ./
     container_name: kotlin-app
     volumes:
-      - ./:/com/epam/crud
+      - ./:/crud-app
     ports:
       - 8080:8080
     expose:
