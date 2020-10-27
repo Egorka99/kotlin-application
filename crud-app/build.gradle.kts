@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.3.72"
+    id("application")
 }
 
 group = "org.example"
@@ -11,6 +12,9 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
+application {
+    mainClassName = "com.epam.crud.app.AppKt"
+}
 
 dependencies {
 
@@ -21,6 +25,7 @@ dependencies {
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")

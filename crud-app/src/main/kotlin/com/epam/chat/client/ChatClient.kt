@@ -5,9 +5,6 @@ import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 suspend fun main() {
     ChatClient().main()
