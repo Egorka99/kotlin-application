@@ -1,0 +1,404 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Storing a list of books and operation with them.",
+    "version": "0.0.2",
+    "title": "Library Application"
+  },
+  "host": "localhost:8080",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/author": {
+      "post": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Adding new author",
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "secondName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/author/{id}": {
+      "get": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Getting author by id",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Deleting author by id",
+        "description": "",
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/author/getAll": {
+      "get": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Getting a list of all authors",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/book": {
+      "post": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Adding new book",
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "bookName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "releaseYear",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "isbn",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "publisher",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorId",
+            "in": "query",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "pageCount",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/book/{id}": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Getting book by id",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Deleting book by id",
+        "description": "",
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/book/getAll": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Getting a list of all books",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/bookmark": {
+      "post": {
+        "tags": [
+          "bookmark"
+        ],
+        "summary": "Adding new bookmark",
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "bookName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "releaseYear",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "isbn",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "publisher",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorId",
+            "in": "query",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "pageCount",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/bookmark/{id}": {
+      "get": {
+        "tags": [
+          "bookmark"
+        ],
+        "summary": "Getting bookmark by id",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "bookmark"
+        ],
+        "summary": "Deleting bookmark by id",
+        "description": "",
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/bookmark/getAll": {
+      "get": {
+        "tags": [
+          "bookmark"
+        ],
+        "summary": "Getting a list of all books",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Error"
+          }
+        }
+      }
+    }
+  }
+}
