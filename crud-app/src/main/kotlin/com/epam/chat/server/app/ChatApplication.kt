@@ -39,6 +39,8 @@ fun main() {
             }
         }
 
+        println("Server started!")
+
         routing {
 
             webSocket("/ws") {
@@ -49,6 +51,8 @@ fun main() {
                     close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No session"))
                     return@webSocket
                 }
+
+
 
                 server.memberJoin(session.id, this)
 

@@ -12,18 +12,21 @@ class ChatServer {
 
     val usersCounter = AtomicInteger()
 
+    val memberNames = ConcurrentHashMap<String, String>()
+
     val members = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
 
     val lastMessages = LinkedList<String>()
 
     suspend fun memberJoin(member: String, socket: WebSocketSession) {
-        val name = "user${usersCounter.incrementAndGet()}"
+        val name = memberNames.computeIfAbsent(member) { "user${usersCounter.incrementAndGet()}" }
 
         val list = members.computeIfAbsent(member) { CopyOnWriteArrayList<WebSocketSession>() }
         list.add(socket)
 
         if (list.size == 1) {
             broadcast("server", "Member joined: $name.")
+            print("Member joined: $name.")
         }
 
         val messages = synchronized(lastMessages) { lastMessages.toList() }
@@ -32,19 +35,24 @@ class ChatServer {
         }
     }
 
+    fun print(message: String) {
+        println("[server] $message")
+    }
+
     suspend fun memberLeft(member: String, socket: WebSocketSession) {
 
         val connections = members[member]
         connections?.remove(socket)
 
         if (connections != null && connections.isEmpty()) {
-            val name = member
+            val name = memberNames.remove(member) ?: member
             broadcast("server", "Member left: $name.")
+            print("Member left: $name.")
         }
     }
 
     suspend fun message(sender: String, message: String) {
-        val name = sender
+        val name = memberNames[sender] ?: sender
         val formatted = "[$name] $message"
 
         broadcast(formatted)
@@ -64,7 +72,7 @@ class ChatServer {
     }
 
     private suspend fun broadcast(sender: String, message: String) {
-        val name = sender
+        val name = memberNames[sender] ?: sender
         broadcast("[$name] $message")
     }
 
