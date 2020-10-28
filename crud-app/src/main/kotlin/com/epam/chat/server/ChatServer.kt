@@ -1,10 +1,11 @@
 package com.epam.chat.server
 
 import io.ktor.http.cio.websocket.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import java.util.*
-import java.util.concurrent.*
-import java.util.concurrent.atomic.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicInteger
 
 
 class ChatServer {
@@ -25,12 +26,17 @@ class ChatServer {
 
         if (list.size == 1) {
             broadcast("server", "Member joined: $name.")
+            print("Member joined: $name.")
         }
 
         val messages = synchronized(lastMessages) { lastMessages.toList() }
         for (message in messages) {
             socket.send(Frame.Text(message))
         }
+    }
+
+    fun print(message: String) {
+        println("[server] $message")
     }
 
     suspend fun memberLeft(member: String, socket: WebSocketSession) {
@@ -41,6 +47,7 @@ class ChatServer {
         if (connections != null && connections.isEmpty()) {
             val name = memberNames.remove(member) ?: member
             broadcast("server", "Member left: $name.")
+            print("Member left: $name.")
         }
     }
 

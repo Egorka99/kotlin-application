@@ -18,7 +18,6 @@ class DatabaseIntegrationTest {
         val password = ""
 
         @BeforeClass
-        @JvmStatic
         fun initData() {
             Database.connect(url, driver = driver, user = user, password = password)
             transaction {

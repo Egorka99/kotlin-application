@@ -1,5 +1,5 @@
 .gradle
-**/build/
+build/
 !src/**/build/
 
 gradle-app.setting
@@ -19,7 +19,6 @@ gradle-app.setting
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
