@@ -49,8 +49,6 @@ fun startServer() {
             bookmarkRout(bookmarkService)
             swaggerRout()
         }
-
-
     }.start(wait = true)
 }
 

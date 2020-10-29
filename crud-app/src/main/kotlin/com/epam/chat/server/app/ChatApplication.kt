@@ -52,8 +52,6 @@ fun main() {
                     return@webSocket
                 }
 
-
-
                 server.memberJoin(session.id, this)
 
                 try {
