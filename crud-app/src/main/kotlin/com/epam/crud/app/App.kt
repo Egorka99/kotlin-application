@@ -1,6 +1,6 @@
 package com.epam.crud.app
 
-import com.epam.crud.DBManager
+import com.epam.crud.DatabaseManager
 import com.epam.crud.endpoints.authorRout
 import com.epam.crud.endpoints.bookRout
 import com.epam.crud.endpoints.bookmarkRout
@@ -18,37 +18,47 @@ import io.ktor.server.netty.*
 
 
 fun main(args: Array<String>) {
-    connectDb()
-    startServer()
+    Application.run()
 }
 
-fun connectDb() {
-    val manager = DBManager()
-    manager.connect()
-}
+object Application {
 
+    fun run() {
+        connectDb()
+        initDb()
+        startServer()
+    }
 
-fun startServer() {
-    embeddedServer(Netty, 8080) {
-        install(OpenAPIGen) {
-            serveSwaggerUi = true
-            swaggerUiPath = "/swagger-ui"
-        }
-        install(ContentNegotiation) {
-            gson {
-                setPrettyPrinting()
+    private fun connectDb() {
+        DatabaseManager.connect()
+    }
+
+    private fun initDb() {
+        DatabaseManager.initData()
+    }
+
+    private fun startServer() {
+        embeddedServer(Netty, 8080) {
+            install(OpenAPIGen) {
+                serveSwaggerUi = true
+                swaggerUiPath = "/swagger-ui"
             }
-        }
-        val authorService = AuthorService()
-        val bookService = BookService()
-        val bookmarkService = BookmarkService()
+            install(ContentNegotiation) {
+                gson {
+                    setPrettyPrinting()
+                }
+            }
 
-        install(Routing) {
-            authorRout(authorService)
-            bookRout(bookService)
-            bookmarkRout(bookmarkService)
-            swaggerRout()
-        }
-    }.start(wait = true)
+            install(Routing) {
+                authorRout(AuthorService())
+                bookRout(BookService())
+                bookmarkRout(BookmarkService())
+                swaggerRout()
+            }
+        }.start(wait = true)
+    }
 }
+
+
+
 

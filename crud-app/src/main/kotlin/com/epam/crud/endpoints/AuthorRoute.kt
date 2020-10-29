@@ -11,9 +11,6 @@ import io.ktor.routing.post
 fun Route.authorRout(authorService: AuthorService) {
 
     route("/author") {
-        static("/static") {
-            resources("files")
-        }
         post {
             var parameters = call.receiveParameters()
 

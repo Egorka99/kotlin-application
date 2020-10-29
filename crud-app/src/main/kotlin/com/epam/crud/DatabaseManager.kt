@@ -12,8 +12,9 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class DBManager {
-    fun connect() = Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver", user = "", password = "")
+object DatabaseManager {
+
+    fun connect() = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver", user = "", password = "")
 
     fun initData() {
         transaction {
@@ -40,8 +41,8 @@ class DBManager {
                 bookId = 1
                 pageNumber = 2
             }
-
         }
+
     }
 
 

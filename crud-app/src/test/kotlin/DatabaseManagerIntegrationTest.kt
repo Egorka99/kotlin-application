@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.BeforeClass
 import org.junit.Test
 
-class DatabaseIntegrationTest {
+class DatabaseManagerIntegrationTest {
 
     companion object {
 
