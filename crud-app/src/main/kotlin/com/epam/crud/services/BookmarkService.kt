@@ -3,19 +3,19 @@ package com.epam.crud.services
 import com.epam.crud.dto.BookmarkDto
 import com.epam.crud.entities.Bookmark
 import com.epam.crud.tables.Bookmarks
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.selectAll
+import com.epam.crud.tables.Bookmarks.bookId
+import com.epam.crud.tables.Bookmarks.pageNumber
+import com.epam.crud.tables.Books
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class BookmarkService {
 
-    fun addBookmark(bookId: Long?, pageNumber: Int?) = transaction {
+    fun addBookmark(bookmark: BookmarkDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Bookmark.new {
-            this.bookId = bookId ?: 0
-            this.pageNumber = pageNumber ?: 0
+        Bookmarks.insert {
+            it[bookId] = bookmark.bookId
+            it[pageNumber] = bookmark.pageNumber
         }
     }
 
@@ -37,8 +37,8 @@ class BookmarkService {
 
     private fun rowToBookmarkDto(row: ResultRow): BookmarkDto {
         return BookmarkDto(
-                bookId = row[Bookmarks.bookId],
-                pageNumber = row[Bookmarks.pageNumber]
+                bookId = row[bookId],
+                pageNumber = row[pageNumber]
         )
     }
 

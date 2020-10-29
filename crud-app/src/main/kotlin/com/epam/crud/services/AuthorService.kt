@@ -4,20 +4,17 @@ import com.epam.crud.dto.AuthorDto
 import com.epam.crud.entities.Author
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Authors.secondName
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class AuthorService {
 
-    fun addAuthor(name: String?, secondName: String?, lastName: String?) = transaction {
+    fun addAuthor(author: AuthorDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Author.new {
-            this.name = name ?: "none"
-            this.secondName = secondName ?: "none"
-            this.lastName = lastName ?: "none"
+        Authors.insert {
+            it[name] = author.name
+            it[secondName] = author.secondName
+            it[lastName] = author.lastName
         }
     }
 

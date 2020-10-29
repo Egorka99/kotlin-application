@@ -1,27 +1,23 @@
 package com.epam.crud.services
 
-import com.epam.crud.DatabaseManager
 import com.epam.crud.dto.BookDto
 import com.epam.crud.entities.Book
 import com.epam.crud.tables.Books
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class BookService {
 
 
-    fun addBook(bookName: String?, releaseYear: Int?, isbn: String?, publisher: String?, authorId: Long?, pageCount: Int?) = transaction {
+    fun addBook(book: BookDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Book.new {
-            this.bookName = bookName ?: "none"
-            this.releaseYear = releaseYear ?: 0
-            this.isbn = isbn ?: "none"
-            this.publisher = publisher ?: "none"
-            this.authorId = authorId ?: 0
-            this.pageCount = pageCount ?: 0
+        Books.insert {
+            it[bookName] = book.bookName
+            it[releaseYear] = book.releaseYear
+            it[isbn] = book.isbn
+            it[publisher] = book.publisher
+            it[authorId] = book.authorId
+            it[pageCount] = book.pageCount
         }
     }
 
