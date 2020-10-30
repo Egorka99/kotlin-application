@@ -1,6 +1,5 @@
-package com.epam.crud.app
+package com.epam.crud
 
-import com.epam.crud.DatabaseManager
 import com.epam.crud.endpoints.authorRout
 import com.epam.crud.endpoints.bookRout
 import com.epam.crud.endpoints.bookmarkRout

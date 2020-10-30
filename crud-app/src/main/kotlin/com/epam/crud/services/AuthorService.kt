@@ -1,7 +1,6 @@
 package com.epam.crud.services
 
 import com.epam.crud.dto.AuthorDto
-import com.epam.crud.entities.Author
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Authors.secondName
 import org.jetbrains.exposed.sql.*
@@ -25,13 +24,12 @@ class AuthorService {
 
     fun getById(id: Long): AuthorDto = transaction {
         addLogger(StdOutSqlLogger)
-        authorToAuthorDto(Author[id])
+        Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }[0]
     }
 
     fun deleteById(id: Long) = transaction {
         addLogger(StdOutSqlLogger)
-        val author = Author[id]
-        author.delete()
+        Authors.deleteWhere { Authors.id eq id }
     }
 
     private fun rowToAuthorDto(row: ResultRow): AuthorDto {
@@ -42,11 +40,4 @@ class AuthorService {
         )
     }
 
-    private fun authorToAuthorDto(author: Author): AuthorDto {
-        return AuthorDto(
-                secondName = author.secondName,
-                name = author.name,
-                lastName = author.lastName
-        )
-    }
 }

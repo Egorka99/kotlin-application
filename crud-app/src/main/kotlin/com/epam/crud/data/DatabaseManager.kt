@@ -1,15 +1,9 @@
 package com.epam.crud
 
-import com.epam.crud.entities.Author
-import com.epam.crud.entities.Book
-import com.epam.crud.entities.Bookmark
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Bookmarks
 import com.epam.crud.tables.Books
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseManager {
@@ -22,24 +16,24 @@ object DatabaseManager {
 
             SchemaUtils.create(Authors, Bookmarks, Books)
 
-            Author.new {
-                name = "Pushkin"
-                secondName = "Alexander"
-                lastName = "Sergeevic"
+            Authors.insert {
+                it[name] = "Pushkin"
+                it[secondName] = "Alexander"
+                it[lastName] = "Sergeevic"
             }
 
-            Book.new {
-                bookName = "Skazka o ribake i ribke"
-                releaseYear = 1835
-                isbn = "0000-0000-0000"
-                publisher = "AST"
-                pageCount = 12
-                authorId = 1
+            Books.insert {
+                it[bookName] = "Skazka o ribake i ribke"
+                it[releaseYear] = 1835
+                it[isbn] = "0000-0000-0000"
+                it[publisher] = "AST"
+                it[pageCount] = 12
+                it[authorId] = 1
             }
 
-            Bookmark.new {
-                bookId = 1
-                pageNumber = 2
+            Bookmarks.insert {
+                it[bookId] = 1
+                it[pageNumber] = 2
             }
         }
 
