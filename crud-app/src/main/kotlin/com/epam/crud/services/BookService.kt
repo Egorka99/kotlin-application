@@ -4,9 +4,10 @@ import com.epam.crud.dto.BookDto
 import com.epam.crud.tables.Books
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class BookService {
-
 
     fun addBook(book: BookDto) = transaction {
         addLogger(StdOutSqlLogger)

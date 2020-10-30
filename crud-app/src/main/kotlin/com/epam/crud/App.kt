@@ -14,6 +14,7 @@ import io.ktor.gson.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.apache.log4j.Logger
 
 
 fun main(args: Array<String>) {
@@ -22,21 +23,27 @@ fun main(args: Array<String>) {
 
 object Application {
 
+    private val logger = Logger.getLogger(javaClass.name);
+
     fun run() {
         connectDb()
         initDb()
         startServer()
+
     }
 
     private fun connectDb() {
+        logger.info("Connect to database..")
         DatabaseManager.connect()
     }
 
     private fun initDb() {
+        logger.info("Init test data..")
         DatabaseManager.initData()
     }
 
     private fun startServer() {
+        logger.info("Start application server..")
         embeddedServer(Netty, 8080) {
             install(OpenAPIGen) {
                 serveSwaggerUi = true
@@ -47,13 +54,13 @@ object Application {
                     setPrettyPrinting()
                 }
             }
-
             install(Routing) {
                 authorRout(AuthorService())
                 bookRout(BookService())
                 bookmarkRout(BookmarkService())
                 swaggerRout()
             }
+            logger.info("Application launched!")
         }.start(wait = true)
     }
 }

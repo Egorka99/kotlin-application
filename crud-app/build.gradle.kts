@@ -22,8 +22,10 @@ dependencies {
     val h2Version = "1.4.200"
     val ktorVersion = "1.4.1"
     val junitVersion = "4.4"
+    val loggerVersion = "1.2.17"
 
     implementation(kotlin("stdlib"))
+    implementation("log4j:log4j:$loggerVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
