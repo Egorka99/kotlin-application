@@ -3,12 +3,15 @@ package com.epam.crud.data
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Bookmarks
 import com.epam.crud.tables.Books
+import com.epam.crud.util.DatabasePropertiesReader
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseManager {
 
-    fun connect() = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver", user = "", password = "")
+    private val reader = DatabasePropertiesReader()
+
+    fun connect() = Database.connect(reader.url, reader.driver, reader.user, reader.password)
 
     fun initData() {
         transaction {
