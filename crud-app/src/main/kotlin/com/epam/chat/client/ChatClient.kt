@@ -5,7 +5,9 @@ import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 suspend fun main() {
@@ -14,7 +16,6 @@ suspend fun main() {
 
 class ChatClient {
 
-    val exitWord = "exit"
     val host = "localhost"
     val port = 8080
     val wsPath = "/ws"
@@ -37,8 +38,8 @@ class ChatClient {
 
             launch {
                 while (true) {
-                    val line = readLine() ?: ""
-                    if (line == exitWord) break else send(line)
+                    val line = withContext(Dispatchers.IO) { readLine() } ?: ""
+                    send(line)
                 }
             }
 

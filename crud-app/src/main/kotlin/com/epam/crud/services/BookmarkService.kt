@@ -1,6 +1,7 @@
 package com.epam.crud.services
 
 import com.epam.crud.dto.BookmarkDto
+import com.epam.crud.exceptions.BookmarkOperationException
 import com.epam.crud.tables.Bookmarks
 import com.epam.crud.tables.Bookmarks.bookId
 import com.epam.crud.tables.Bookmarks.pageNumber
@@ -24,7 +25,11 @@ class BookmarkService {
 
     fun getById(id: Long): BookmarkDto = transaction {
         addLogger(StdOutSqlLogger)
-        Bookmarks.select { Bookmarks.id eq id }.map { a -> rowToBookmarkDto(a) }[0]
+        val bookmark = Bookmarks.select { Bookmarks.id eq id }.map { a -> rowToBookmarkDto(a) }
+        if (bookmark.isEmpty()) {
+            throw BookmarkOperationException()
+        }
+        bookmark[0]
     }
 
     fun deleteById(id: Long) = transaction {

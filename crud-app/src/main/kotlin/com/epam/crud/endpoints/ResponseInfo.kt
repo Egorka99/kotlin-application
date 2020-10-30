@@ -1,3 +1,5 @@
 package com.epam.crud.endpoints
 
-data class ResponseInfo(val code: Int, val message: String)
+import io.ktor.http.*
+
+data class ResponseInfo(val code: HttpStatusCode, val message: String)

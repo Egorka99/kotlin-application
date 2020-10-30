@@ -1,6 +1,8 @@
 package com.epam.crud.services
 
 import com.epam.crud.dto.AuthorDto
+import com.epam.crud.exceptions.AuthorOperationException
+import com.epam.crud.exceptions.BookmarkOperationException
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Authors.secondName
 import org.jetbrains.exposed.sql.*
@@ -25,7 +27,11 @@ class AuthorService {
 
     fun getById(id: Long): AuthorDto = transaction {
         addLogger(StdOutSqlLogger)
-        Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }[0]
+        val author = Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }
+        if (author.isEmpty()) {
+            throw AuthorOperationException()
+        }
+        author[0]
     }
 
     fun deleteById(id: Long) = transaction {

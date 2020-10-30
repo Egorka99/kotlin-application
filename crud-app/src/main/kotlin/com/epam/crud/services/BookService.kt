@@ -1,11 +1,10 @@
 package com.epam.crud.services
 
 import com.epam.crud.dto.BookDto
+import com.epam.crud.exceptions.BookOperationException
 import com.epam.crud.tables.Books
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class BookService {
 
@@ -23,12 +22,20 @@ class BookService {
 
     fun getAllBooks(): List<BookDto> = transaction {
         addLogger(StdOutSqlLogger)
-        Books.selectAll().map { rowToBookDto(it) }
+        val books = Books.selectAll().map { rowToBookDto(it) }
+        if (books.isEmpty()) {
+            throw BookOperationException()
+        }
+        books
     }
 
     fun getById(id: Long): BookDto = transaction {
         addLogger(StdOutSqlLogger)
-        Books.select { Books.id eq id }.map { a -> rowToBookDto(a) }[0]
+        val book = Books.select { Books.id eq id }.map { a -> rowToBookDto(a) }
+        if (book.isEmpty()) {
+            throw BookOperationException()
+        }
+        book[0]
     }
 
     fun deleteById(id: Long) = transaction {
