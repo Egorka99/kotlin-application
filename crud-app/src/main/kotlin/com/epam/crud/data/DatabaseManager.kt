@@ -1,4 +1,4 @@
-package com.epam.crud
+package com.epam.crud.data
 
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Bookmarks
