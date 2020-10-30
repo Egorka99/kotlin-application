@@ -4,7 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
-import kotlinx.coroutines.async
+import io.ktor.util.*
 import kotlinx.coroutines.launch
 
 
@@ -19,10 +19,12 @@ class ChatClient {
     val port = 8080
     val wsPath = "/ws"
 
+    @KtorExperimentalAPI
     val client = HttpClient {
         install(WebSockets)
     }
 
+    @KtorExperimentalAPI
     private suspend fun createSession() {
         client.ws(
                 method = HttpMethod.Get,
@@ -49,6 +51,7 @@ class ChatClient {
         }
     }
 
+    @KtorExperimentalAPI
     suspend fun main() {
         createSession()
     }
