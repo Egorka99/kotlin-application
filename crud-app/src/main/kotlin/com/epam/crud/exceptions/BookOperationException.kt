@@ -1,5 +1,5 @@
 package com.epam.crud.exceptions
 
-class BookOperationException : Exception() {
+class BookOperationException(s: String) : Exception(s) {
 
 }

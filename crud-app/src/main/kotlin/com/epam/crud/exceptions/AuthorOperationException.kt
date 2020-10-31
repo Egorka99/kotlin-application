@@ -1,5 +1,5 @@
 package com.epam.crud.exceptions
 
-class AuthorOperationException : Exception() {
+class AuthorOperationException(s: String) : Exception(s) {
 
 }

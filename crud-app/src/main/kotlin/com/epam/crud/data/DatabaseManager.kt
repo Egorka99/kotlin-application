@@ -7,9 +7,9 @@ import com.epam.crud.util.DatabasePropertiesReader
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object DatabaseManager {
+class DatabaseManager(propertiesPath: String) {
 
-    private val reader = DatabasePropertiesReader()
+    private val reader = DatabasePropertiesReader(propertiesPath)
 
     fun connect() = Database.connect(reader.url, reader.driver, reader.user, reader.password)
 
@@ -40,6 +40,12 @@ object DatabaseManager {
             }
         }
 
+    }
+
+    fun clearData() {
+        transaction {
+            SchemaUtils.drop(Authors, Bookmarks, Books)
+        }
     }
 
 

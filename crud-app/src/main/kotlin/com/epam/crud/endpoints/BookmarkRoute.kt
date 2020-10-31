@@ -19,8 +19,6 @@ fun Route.bookmarkRout(bookmarkService: BookmarkService) {
                 bookmarkService.addBookmark(dto)
             } catch (ex: UnsupportedMediaTypeException) {
                 call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
-            } catch (ex: Exception) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
             call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
@@ -29,8 +27,6 @@ fun Route.bookmarkRout(bookmarkService: BookmarkService) {
             try {
                 call.respond(bookmarkService.getAllBookmarks())
             } catch (ex: BookmarkOperationException) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, "Bookmarks not found"))
-            } catch (ex: Exception) {
                 call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
@@ -39,8 +35,6 @@ fun Route.bookmarkRout(bookmarkService: BookmarkService) {
             try {
                 call.respond(bookmarkService.getById(call.parameters["id"]!!.toLong()))
             } catch (ex: BookmarkOperationException) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, "Bookmark with such Id was not found"))
-            } catch (ex: Exception) {
                 call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 

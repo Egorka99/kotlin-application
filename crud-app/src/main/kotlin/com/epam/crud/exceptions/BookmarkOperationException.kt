@@ -1,5 +1,5 @@
 package com.epam.crud.exceptions
 
-class BookmarkOperationException : Exception() {
+class BookmarkOperationException(s: String) : Exception(s) {
 
 }

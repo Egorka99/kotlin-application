@@ -2,14 +2,12 @@ package com.epam.crud.services
 
 import com.epam.crud.dto.AuthorDto
 import com.epam.crud.exceptions.AuthorOperationException
-import com.epam.crud.exceptions.BookmarkOperationException
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Authors.secondName
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class AuthorService {
-
 
     fun addAuthor(author: AuthorDto) = transaction {
         addLogger(StdOutSqlLogger)
@@ -22,14 +20,18 @@ class AuthorService {
 
     fun getAllAuthors(): List<AuthorDto> = transaction {
         addLogger(StdOutSqlLogger)
-        Authors.selectAll().map { rowToAuthorDto(it) }
+        val authors = Authors.selectAll().map { rowToAuthorDto(it) }
+        if (authors.isEmpty()) {
+            throw AuthorOperationException("Authors not found")
+        }
+        authors
     }
 
     fun getById(id: Long): AuthorDto = transaction {
         addLogger(StdOutSqlLogger)
         val author = Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }
         if (author.isEmpty()) {
-            throw AuthorOperationException()
+            throw AuthorOperationException("Author with such Id was not found")
         }
         author[0]
     }

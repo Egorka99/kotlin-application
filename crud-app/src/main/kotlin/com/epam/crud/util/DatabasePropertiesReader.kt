@@ -1,6 +1,6 @@
 package com.epam.crud.util
 
-class DatabasePropertiesReader : PropertiesReader() {
+class DatabasePropertiesReader(propertiesPath: String) : PropertiesReader(propertiesPath) {
 
     val url: String = properties.getProperty("db.url")
     val driver: String = properties.getProperty("db.driver")

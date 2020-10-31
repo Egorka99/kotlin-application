@@ -33,12 +33,12 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
     implementation("io.ktor:ktor-websockets:$ktorVersion")
     implementation("com.github.papsign:Ktor-OpenAPI-Generator:-SNAPSHOT")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("junit:junit:$junitVersion")
 }
 
 

@@ -19,8 +19,6 @@ fun Route.authorRout(authorService: AuthorService) {
                 authorService.addAuthor(dto)
             } catch (ex: UnsupportedMediaTypeException) {
                 call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
-            } catch (ex: Exception) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
             call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
@@ -29,8 +27,6 @@ fun Route.authorRout(authorService: AuthorService) {
             try {
                 call.respond(authorService.getAllAuthors())
             } catch (ex: AuthorOperationException) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, "Authors not found"))
-            } catch (ex: Exception) {
                 call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
@@ -39,8 +35,6 @@ fun Route.authorRout(authorService: AuthorService) {
             try {
                 call.respond(authorService.getById(call.parameters["id"]!!.toLong()))
             } catch (ex: AuthorOperationException) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, "Author with such Id was not found"))
-            } catch (ex: Exception) {
                 call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 

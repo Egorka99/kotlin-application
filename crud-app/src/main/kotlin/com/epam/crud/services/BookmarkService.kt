@@ -1,6 +1,7 @@
 package com.epam.crud.services
 
 import com.epam.crud.dto.BookmarkDto
+import com.epam.crud.exceptions.BookOperationException
 import com.epam.crud.exceptions.BookmarkOperationException
 import com.epam.crud.tables.Bookmarks
 import com.epam.crud.tables.Bookmarks.bookId
@@ -20,14 +21,18 @@ class BookmarkService {
 
     fun getAllBookmarks(): List<BookmarkDto> = transaction {
         addLogger(StdOutSqlLogger)
-        Bookmarks.selectAll().map { rowToBookmarkDto(it) }
+        val bookmarks = Bookmarks.selectAll().map { rowToBookmarkDto(it) }
+        if (bookmarks.isEmpty()) {
+            throw BookOperationException("Bookmarks not found")
+        }
+        bookmarks
     }
 
     fun getById(id: Long): BookmarkDto = transaction {
         addLogger(StdOutSqlLogger)
         val bookmark = Bookmarks.select { Bookmarks.id eq id }.map { a -> rowToBookmarkDto(a) }
         if (bookmark.isEmpty()) {
-            throw BookmarkOperationException()
+            throw BookmarkOperationException("Bookmark with such Id was not found")
         }
         bookmark[0]
     }

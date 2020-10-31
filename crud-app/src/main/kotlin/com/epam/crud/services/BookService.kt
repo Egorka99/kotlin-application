@@ -24,7 +24,7 @@ class BookService {
         addLogger(StdOutSqlLogger)
         val books = Books.selectAll().map { rowToBookDto(it) }
         if (books.isEmpty()) {
-            throw BookOperationException()
+            throw BookOperationException("Books not found")
         }
         books
     }
@@ -33,7 +33,7 @@ class BookService {
         addLogger(StdOutSqlLogger)
         val book = Books.select { Books.id eq id }.map { a -> rowToBookDto(a) }
         if (book.isEmpty()) {
-            throw BookOperationException()
+            throw BookOperationException("Book with such Id was not found")
         }
         book[0]
     }

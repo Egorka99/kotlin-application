@@ -1,4 +1,4 @@
-package com.epam.crud
+package com.epam.app
 
 import com.epam.crud.data.DatabaseManager
 import com.epam.crud.endpoints.authorRout
@@ -16,15 +16,11 @@ import io.ktor.routing.*
 import org.apache.log4j.Logger
 
 
-fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
-}
-
-fun Application.module() {
+fun Application.testModule() {
 
     val logger = Logger.getLogger(javaClass.name);
 
-    val dbManager = DatabaseManager("crud-app/src/main/resources/application.properties")
+    val dbManager = DatabaseManager("src/test/resources/application.properties")
 
     logger.info("Connect to database..")
     dbManager.connect()
@@ -50,10 +46,3 @@ fun Application.module() {
     }
     logger.info("Application launched!")
 }
-
-
-
-
-
-
-

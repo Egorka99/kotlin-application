@@ -19,8 +19,6 @@ fun Route.bookRout(bookService: BookService) {
                 bookService.addBook(dto)
             } catch (ex: UnsupportedMediaTypeException) {
                 call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
-            } catch (ex: Exception) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
             call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
@@ -29,8 +27,6 @@ fun Route.bookRout(bookService: BookService) {
             try {
                 call.respond(bookService.getAllBooks())
             } catch (ex: BookOperationException) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, "Books not found"))
-            } catch (ex: Exception) {
                 call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
@@ -39,8 +35,6 @@ fun Route.bookRout(bookService: BookService) {
             try {
                 call.respond(bookService.getById(call.parameters["id"]!!.toLong()))
             } catch (ex: BookOperationException) {
-                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, "Book with such Id was not found"))
-            } catch (ex: Exception) {
                 call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 

@@ -55,7 +55,7 @@ class ChatServer {
                         sendLastMessages(client)
                         try {
                             while (true) {
-                                when (val frame = incoming.receive()) { // suspend
+                                when (val frame = incoming.receive()) {
                                     is Frame.Text -> {
                                         val text = "[${client.name}] ${frame.readText()}"
                                         broadcast(text)
