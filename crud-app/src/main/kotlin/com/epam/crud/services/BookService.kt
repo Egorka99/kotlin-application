@@ -10,14 +10,19 @@ class BookService {
 
     fun addBook(book: BookDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Books.insert {
-            it[bookName] = book.bookName
-            it[releaseYear] = book.releaseYear
-            it[isbn] = book.isbn
-            it[publisher] = book.publisher
-            it[authorId] = book.authorId
-            it[pageCount] = book.pageCount
+        try {
+            Books.insert {
+                it[bookName] = book.bookName
+                it[releaseYear] = book.releaseYear
+                it[isbn] = book.isbn
+                it[publisher] = book.publisher
+                it[authorId] = book.authorId
+                it[pageCount] = book.pageCount
+            }
+        } catch (ex: Exception) {
+            throw BookOperationException("Failed to add book")
         }
+
     }
 
     fun getAllBooks(): List<BookDto> = transaction {
@@ -40,7 +45,12 @@ class BookService {
 
     fun deleteById(id: Long) = transaction {
         addLogger(StdOutSqlLogger)
+        val book = Books.select { Books.id eq id }.map { a -> rowToBookDto(a) }
+        if (book.isEmpty()) {
+            throw BookOperationException("Book with such Id was not found")
+        }
         Books.deleteWhere { Books.id eq id }
+
     }
 
     private fun rowToBookDto(row: ResultRow): BookDto {

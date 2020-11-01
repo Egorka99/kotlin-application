@@ -17,11 +17,13 @@ fun Route.authorRout(authorService: AuthorService) {
             try {
                 val dto = call.receive<AuthorDto>()
                 authorService.addAuthor(dto)
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
             } catch (ex: UnsupportedMediaTypeException) {
                 call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
+            } catch (ex: AuthorOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
-            call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
         }
         get("/getAll") {
             try {
@@ -40,9 +42,14 @@ fun Route.authorRout(authorService: AuthorService) {
 
         }
         delete("/{id}") {
-            authorService.deleteById(call.parameters["id"]!!.toLong())
+            try {
+                authorService.deleteById(call.parameters["id"]!!.toLong())
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+            } catch (ex: AuthorOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
 
-            call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+
         }
     }
 

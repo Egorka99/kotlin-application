@@ -17,11 +17,13 @@ fun Route.bookmarkRout(bookmarkService: BookmarkService) {
             try {
                 val dto = call.receive<BookmarkDto>()
                 bookmarkService.addBookmark(dto)
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
             } catch (ex: UnsupportedMediaTypeException) {
                 call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
+            } catch (ex: BookmarkOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
-            call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
         }
         get("/getAll") {
             try {
@@ -40,9 +42,14 @@ fun Route.bookmarkRout(bookmarkService: BookmarkService) {
 
         }
         delete("/{id}") {
-            bookmarkService.deleteById(call.parameters["id"]!!.toLong())
+            try {
+                bookmarkService.deleteById(call.parameters["id"]!!.toLong())
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+            } catch (ex: BookmarkOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
 
-            call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+
         }
     }
 

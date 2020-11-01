@@ -11,11 +11,16 @@ class AuthorService {
 
     fun addAuthor(author: AuthorDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Authors.insert {
-            it[name] = author.name
-            it[secondName] = author.secondName
-            it[lastName] = author.lastName
+        try {
+            Authors.insert {
+                it[name] = author.name
+                it[secondName] = author.secondName
+                it[lastName] = author.lastName
+            }
+        } catch (ex: Exception) {
+            throw AuthorOperationException("Failed to add author")
         }
+
     }
 
     fun getAllAuthors(): List<AuthorDto> = transaction {
@@ -38,7 +43,12 @@ class AuthorService {
 
     fun deleteById(id: Long) = transaction {
         addLogger(StdOutSqlLogger)
+        val author = Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }
+        if (author.isEmpty()) {
+            throw AuthorOperationException("Author with such Id was not found")
+        }
         Authors.deleteWhere { Authors.id eq id }
+
     }
 
     private fun rowToAuthorDto(row: ResultRow): AuthorDto {

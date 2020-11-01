@@ -17,11 +17,13 @@ fun Route.bookRout(bookService: BookService) {
             try {
                 val dto = call.receive<BookDto>()
                 bookService.addBook(dto)
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
             } catch (ex: UnsupportedMediaTypeException) {
                 call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
+            } catch (ex: BookOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
             }
 
-            call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
         }
         get("/getAll") {
             try {
@@ -40,9 +42,14 @@ fun Route.bookRout(bookService: BookService) {
 
         }
         delete("/{id}") {
-            bookService.deleteById(call.parameters["id"]!!.toLong())
+            try {
+                bookService.deleteById(call.parameters["id"]!!.toLong())
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+            } catch (ex: BookOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
 
-            call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+
         }
     }
 
