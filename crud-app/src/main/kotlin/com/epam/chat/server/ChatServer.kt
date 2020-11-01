@@ -27,61 +27,59 @@ class Client(val session: DefaultWebSocketSession) {
 }
 
 
-class ChatServer {
+object ChatServer {
 
-    companion object {
-        private val logger = Logger.getLogger(ChatServer::class.simpleName)
+    private val logger = Logger.getLogger(ChatServer::class.simpleName)
 
-        private val clients = Collections.synchronizedSet(HashSet<Client>())
+    private val clients = Collections.synchronizedSet(HashSet<Client>())
 
-        private val lastMessages = ArrayList<String>()
+    private val lastMessages = ArrayList<String>()
 
-        fun run() {
-            startServer()
-        }
+    fun run() {
+        startServer()
+    }
 
-        private fun startServer() {
-            embeddedServer(Netty, 8080) {
-                install(WebSockets)
-                install(Sessions)
+    private fun startServer() {
+        embeddedServer(Netty, 8080) {
+            install(WebSockets)
+            install(Sessions)
 
-                logger.info("Server started!")
+            logger.info("Server started!")
 
-                routing {
-                    webSocket("/ws") {
-                        val client = Client(this)
-                        clients += client
-                        logger.info("${client.name} connected")
-                        sendLastMessages(client)
-                        try {
-                            while (true) {
-                                when (val frame = incoming.receive()) {
-                                    is Frame.Text -> {
-                                        val text = "[${client.name}] ${frame.readText()}"
-                                        broadcast(text)
-                                        lastMessages += text
-                                    }
+            routing {
+                webSocket("/ws") {
+                    val client = Client(this)
+                    clients += client
+                    logger.info("${client.name} connected")
+                    sendLastMessages(client)
+                    try {
+                        while (true) {
+                            when (val frame = incoming.receive()) {
+                                is Frame.Text -> {
+                                    val text = "[${client.name}] ${frame.readText()}"
+                                    broadcast(text)
+                                    lastMessages += text
                                 }
                             }
-                        } finally {
-                            clients -= client
-                            logger.info("${client.name} disconnected")
                         }
+                    } finally {
+                        clients -= client
+                        logger.info("${client.name} disconnected")
                     }
                 }
-            }.start(wait = true)
-        }
-
-        private suspend fun broadcast(message: String) {
-            for (client in clients) {
-                client.session.outgoing.send(Frame.Text(message))
             }
-        }
+        }.start(wait = true)
+    }
 
-        private suspend fun sendLastMessages(client: Client) {
-            for (message in lastMessages) {
-                client.session.outgoing.send(Frame.Text(message))
-            }
+    private suspend fun broadcast(message: String) {
+        for (client in clients) {
+            client.session.outgoing.send(Frame.Text(message))
+        }
+    }
+
+    private suspend fun sendLastMessages(client: Client) {
+        for (message in lastMessages) {
+            client.session.outgoing.send(Frame.Text(message))
         }
     }
 

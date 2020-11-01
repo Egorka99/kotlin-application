@@ -1,4 +1,4 @@
-package com.epam
+package com.epam.positive
 
 import com.epam.app.testModule
 import com.epam.crud.data.DatabaseManager

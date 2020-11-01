@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
+@KtorExperimentalAPI
 suspend fun main() {
     ChatClient().main()
 }
