@@ -15,7 +15,6 @@ import io.ktor.gson.*
 import io.ktor.routing.*
 import org.apache.log4j.Logger
 
-
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
@@ -24,7 +23,7 @@ fun Application.module() {
 
     val logger = Logger.getLogger(javaClass.name);
 
-    val dbManager = DatabaseManager("crud-app/src/main/resources/application.properties")
+    val dbManager = DatabaseManager("application.properties")
 
     logger.info("Connect to database..")
     dbManager.connect()

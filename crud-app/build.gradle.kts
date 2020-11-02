@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.3.72"
     id("application")
+    id("com.github.johnrengelman.shadow") version "4.0.4"
 }
 
 group = "org.example"
@@ -13,7 +14,13 @@ repositories {
 }
 
 application {
-    mainClassName = "com.epam.crud.app.AppKt"
+    mainClassName = "com.epam.crud.AppKt"
+}
+
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
 }
 
 dependencies {
