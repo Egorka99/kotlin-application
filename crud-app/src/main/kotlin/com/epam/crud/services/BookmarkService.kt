@@ -1,57 +1,60 @@
 package com.epam.crud.services
 
-import com.epam.crud.DBManager
 import com.epam.crud.dto.BookmarkDto
-import com.epam.crud.entities.Bookmark
+import com.epam.crud.exceptions.BookmarkOperationException
 import com.epam.crud.tables.Bookmarks
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.selectAll
+import com.epam.crud.tables.Bookmarks.bookId
+import com.epam.crud.tables.Bookmarks.pageNumber
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class BookmarkService {
-    val manager = DBManager()
 
-    fun addBookmark(bookId: Long?, pageNumber: Int?) = transaction {
-        manager.initData()
+    fun addBookmark(bookmark: BookmarkDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Bookmark.new {
-            this.bookId = bookId ?: 0
-            this.pageNumber = pageNumber ?: 0
+        try {
+            Bookmarks.insert {
+                it[bookId] = bookmark.bookId
+                it[pageNumber] = bookmark.pageNumber
+            }
+        } catch (ex: Exception) {
+            throw BookmarkOperationException("Failed to add bookmark")
         }
+
     }
 
     fun getAllBookmarks(): List<BookmarkDto> = transaction {
-        manager.initData()
         addLogger(StdOutSqlLogger)
-        Bookmarks.selectAll().map { rowToBookmarkDto(it) }
+        val bookmarks = Bookmarks.selectAll().map { rowToBookmarkDto(it) }
+        if (bookmarks.isEmpty()) {
+            throw BookmarkOperationException("Bookmarks not found")
+        }
+        bookmarks
     }
 
     fun getById(id: Long): BookmarkDto = transaction {
-        manager.initData()
         addLogger(StdOutSqlLogger)
-        bookmarkToBookmarkDto(Bookmark[id])
+        val bookmark = Bookmarks.select { Bookmarks.id eq id }.map { a -> rowToBookmarkDto(a) }
+        if (bookmark.isEmpty()) {
+            throw BookmarkOperationException("Bookmark with such Id was not found")
+        }
+        bookmark[0]
     }
 
     fun deleteById(id: Long) = transaction {
-        manager.initData()
         addLogger(StdOutSqlLogger)
-        val bookmark = Bookmark[id]
-        bookmark.delete()
+        val bookmark = Bookmarks.select { Bookmarks.id eq id }.map { a -> rowToBookmarkDto(a) }
+        if (bookmark.isEmpty()) {
+            throw BookmarkOperationException("Bookmark with such Id was not found")
+        }
+        Bookmarks.deleteWhere { Bookmarks.id eq id }
     }
 
     private fun rowToBookmarkDto(row: ResultRow): BookmarkDto {
         return BookmarkDto(
-                bookId = row[Bookmarks.bookId],
-                pageNumber = row[Bookmarks.pageNumber]
+                bookId = row[bookId],
+                pageNumber = row[pageNumber]
         )
     }
 
-    private fun bookmarkToBookmarkDto(Bookmark: Bookmark): BookmarkDto {
-        return BookmarkDto(
-                bookId = Bookmark.bookId,
-                pageNumber = Bookmark.pageNumber
-        )
-    }
 }

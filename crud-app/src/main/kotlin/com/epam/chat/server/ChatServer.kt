@@ -1,91 +1,87 @@
 package com.epam.chat.server
 
+import io.ktor.application.*
 import io.ktor.http.cio.websocket.*
-import kotlinx.coroutines.channels.ClosedSendChannelException
+import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.sessions.*
+import io.ktor.websocket.*
+import org.apache.log4j.Logger
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.ArrayList
 
 
-class ChatServer {
+fun main(args: Array<String>) {
+    ChatServer.run()
+}
 
-    val usersCounter = AtomicInteger()
-
-    val memberNames = ConcurrentHashMap<String, String>()
-
-    val members = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
-
-    val lastMessages = LinkedList<String>()
-
-    suspend fun memberJoin(member: String, socket: WebSocketSession) {
-        val name = memberNames.computeIfAbsent(member) { "user${usersCounter.incrementAndGet()}" }
-
-        val list = members.computeIfAbsent(member) { CopyOnWriteArrayList<WebSocketSession>() }
-        list.add(socket)
-
-        if (list.size == 1) {
-            broadcast("server", "Member joined: $name.")
-            print("Member joined: $name.")
-        }
-
-        val messages = synchronized(lastMessages) { lastMessages.toList() }
-        for (message in messages) {
-            socket.send(Frame.Text(message))
-        }
+class Client(val session: DefaultWebSocketSession) {
+    companion object {
+        var lastId = AtomicInteger(1)
     }
 
-    fun print(message: String) {
-        println("[server] $message")
+    val id = lastId.getAndIncrement()
+    val name = "user$id"
+}
+
+
+object ChatServer {
+
+    private val logger = Logger.getLogger(ChatServer::class.simpleName)
+
+    private val clients = Collections.synchronizedSet(HashSet<Client>())
+
+    private val lastMessages = ArrayList<String>()
+
+    fun run() {
+        startServer()
     }
 
-    suspend fun memberLeft(member: String, socket: WebSocketSession) {
+    private fun startServer() {
+        embeddedServer(Netty, 8080) {
+            install(WebSockets)
+            install(Sessions)
 
-        val connections = members[member]
-        connections?.remove(socket)
+            logger.info("Server started!")
 
-        if (connections != null && connections.isEmpty()) {
-            val name = memberNames.remove(member) ?: member
-            broadcast("server", "Member left: $name.")
-            print("Member left: $name.")
-        }
-    }
-
-    suspend fun message(sender: String, message: String) {
-        val name = memberNames[sender] ?: sender
-        val formatted = "[$name] $message"
-
-        broadcast(formatted)
-
-        synchronized(lastMessages) {
-            lastMessages.add(formatted)
-            if (lastMessages.size > 100) {
-                lastMessages.removeFirst()
+            routing {
+                webSocket("/ws") {
+                    val client = Client(this)
+                    clients += client
+                    logger.info("${client.name} connected")
+                    sendLastMessages(client)
+                    try {
+                        while (true) {
+                            when (val frame = incoming.receive()) {
+                                is Frame.Text -> {
+                                    val text = "[${client.name}] ${frame.readText()}"
+                                    broadcast(text)
+                                    lastMessages += text
+                                }
+                            }
+                        }
+                    } finally {
+                        clients -= client
+                        logger.info("${client.name} disconnected")
+                    }
+                }
             }
-        }
+        }.start(wait = true)
     }
 
     private suspend fun broadcast(message: String) {
-        members.values.forEach { socket ->
-            socket.send(Frame.Text(message))
+        for (client in clients) {
+            client.session.outgoing.send(Frame.Text(message))
         }
     }
 
-    private suspend fun broadcast(sender: String, message: String) {
-        val name = memberNames[sender] ?: sender
-        broadcast("[$name] $message")
-    }
-
-    suspend fun List<WebSocketSession>.send(frame: Frame) {
-        forEach {
-            try {
-                it.send(frame.copy())
-            } catch (t: Throwable) {
-                try {
-                    it.close(CloseReason(CloseReason.Codes.PROTOCOL_ERROR, ""))
-                } catch (ignore: ClosedSendChannelException) {
-                }
-            }
+    private suspend fun sendLastMessages(client: Client) {
+        for (message in lastMessages) {
+            client.session.outgoing.send(Frame.Text(message))
         }
     }
+
 }
+

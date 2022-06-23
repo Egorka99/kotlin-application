@@ -1,47 +1,54 @@
 package com.epam.crud.services
 
-import com.epam.crud.DBManager
 import com.epam.crud.dto.AuthorDto
-import com.epam.crud.entities.Author
+import com.epam.crud.exceptions.AuthorOperationException
 import com.epam.crud.tables.Authors
 import com.epam.crud.tables.Authors.secondName
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class AuthorService {
 
-    val manager = DBManager()
-
-    fun addAuthor(name: String?, secondName: String?, lastName: String?) = transaction {
-        manager.initData()
+    fun addAuthor(author: AuthorDto) = transaction {
         addLogger(StdOutSqlLogger)
-        Author.new {
-            this.name = name ?: "none"
-            this.secondName = secondName ?: "none"
-            this.lastName = lastName ?: "none"
+        try {
+            Authors.insert {
+                it[name] = author.name
+                it[secondName] = author.secondName
+                it[lastName] = author.lastName
+            }
+        } catch (ex: Exception) {
+            throw AuthorOperationException("Failed to add author")
         }
+
     }
 
     fun getAllAuthors(): List<AuthorDto> = transaction {
-        manager.initData()
         addLogger(StdOutSqlLogger)
-        Authors.selectAll().map { rowToAuthorDto(it) }
+        val authors = Authors.selectAll().map { rowToAuthorDto(it) }
+        if (authors.isEmpty()) {
+            throw AuthorOperationException("Authors not found")
+        }
+        authors
     }
 
     fun getById(id: Long): AuthorDto = transaction {
-        manager.initData()
         addLogger(StdOutSqlLogger)
-        authorToAuthorDto(Author[id])
+        val author = Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }
+        if (author.isEmpty()) {
+            throw AuthorOperationException("Author with such Id was not found")
+        }
+        author[0]
     }
 
     fun deleteById(id: Long) = transaction {
-        manager.initData()
         addLogger(StdOutSqlLogger)
-        val author = Author[id]
-        author.delete()
+        val author = Authors.select { Authors.id eq id }.map { a -> rowToAuthorDto(a) }
+        if (author.isEmpty()) {
+            throw AuthorOperationException("Author with such Id was not found")
+        }
+        Authors.deleteWhere { Authors.id eq id }
+
     }
 
     private fun rowToAuthorDto(row: ResultRow): AuthorDto {
@@ -52,11 +59,4 @@ class AuthorService {
         )
     }
 
-    private fun authorToAuthorDto(author: Author): AuthorDto {
-        return AuthorDto(
-                secondName = author.secondName,
-                name = author.name,
-                lastName = author.lastName
-        )
-    }
 }

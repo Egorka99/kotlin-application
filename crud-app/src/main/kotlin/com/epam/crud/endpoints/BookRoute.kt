@@ -1,7 +1,11 @@
 package com.epam.crud.endpoints
 
+import com.epam.crud.dto.BookDto
+import com.epam.crud.exceptions.BookOperationException
 import com.epam.crud.services.BookService
 import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -10,30 +14,45 @@ fun Route.bookRout(bookService: BookService) {
 
     route("/book") {
         post {
-            var parameters = call.receiveParameters()
+            try {
+                val dto = call.receive<BookDto>()
+                bookService.addBook(dto)
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+            } catch (ex: UnsupportedMediaTypeException) {
+                call.respond(ResponseInfo(HttpStatusCode.UnsupportedMediaType, "Incorrect request media type"))
+            } catch (ex: BookOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
 
-            bookService.addBook(
-                    parameters["bookName"],
-                    parameters["releaseYear"]?.toInt(),
-                    parameters["isbn"],
-                    parameters["publisher"],
-                    parameters["authorId"]?.toLong(),
-                    parameters["pageCount"]?.toInt()
-            )
-
-            call.respond("Success!")
         }
         get("/getAll") {
-            call.respond(bookService.getAllBooks())
+            try {
+                call.respond(bookService.getAllBooks())
+            } catch (ex: BookOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
+
         }
         get("/{id}") {
-            call.respond(bookService.getById(call.parameters["id"]!!.toLong()))
+            try {
+                call.respond(bookService.getById(call.parameters["id"]!!.toLong()))
+            } catch (ex: BookOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
+
         }
         delete("/{id}") {
-            bookService.deleteById(call.parameters["id"]!!.toLong())
-            call.respond("Success!")
+            try {
+                bookService.deleteById(call.parameters["id"]!!.toLong())
+                call.respond(ResponseInfo(HttpStatusCode.OK, "Success!"))
+            } catch (ex: BookOperationException) {
+                call.respond(ResponseInfo(HttpStatusCode.InternalServerError, ex.message.toString()))
+            }
+
+
         }
     }
 
 }
+
 
